@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:math_expressions/math_expressions.dart';
 
 void main() => runApp(MyApp());
 
@@ -19,8 +20,46 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int fir_num;
-  int second_num;
+  String equation = "0";
+  String reslut = "0";
+  String expression = "";
+
+
+  void btnClick(String btnText) {
+    setState(() {
+      if (btnText == "C") {
+        equation = "0";
+        reslut = "0";
+      }
+      else if (btnText == "del") {
+        equation = equation.substring(0, equation.length - 1);
+        if (equation == "") {
+          equation = "0";
+        }
+      }
+      else if (btnText == "=") {
+        expression = equation;
+        try {
+          Parser p = Parser();
+          Expression exp = p.parse(expression);
+          ContextModel cm = ContextModel();
+          reslut = '${exp.evaluate(EvaluationType.REAL, cm)}';
+        } catch (e) {
+          reslut = "Error";
+        }
+      } else {
+        if (equation == "0") {
+          equation = btnText;
+        } else {
+          equation = equation + btnText;
+        }
+      }
+    });
+  }
+
+
+
+
 
   Widget customButton(String btval) {
     return Expanded(
@@ -30,7 +69,7 @@ class _HomePageState extends State<HomePage> {
           btval,
           style: TextStyle(fontSize: 25.0),
         ),
-        onPressed: () {},
+        onPressed: () => btnClick(btval),
       ),
     );
   }
@@ -47,17 +86,18 @@ class _HomePageState extends State<HomePage> {
                 padding: EdgeInsets.all(10.0),
                 alignment: Alignment.bottomRight,
                 child: Text(
-                  "output",
+                  "$equation",
                   style: TextStyle(fontSize: 35.0, fontWeight: FontWeight.w600),
                 ),
               ),
             ),
+
             Expanded(
               child: Container(
                 padding: EdgeInsets.all(10.0),
                 alignment: Alignment.bottomRight,
                 child: Text(
-                  "output",
+                  "$reslut",
                   style: TextStyle(fontSize: 35.0, fontWeight: FontWeight.w600),
                 ),
               ),
